@@ -1,0 +1,17 @@
+{
+  "name": "bogdankharchenko-marketplace",
+  "owner": {
+    "name": "Bogdan Kharchenko"
+  },
+  "plugins": [
+    {
+      "name": "storyboard",
+      "description": "Generate consistent multi-scene storyboard images using Google Gemini",
+      "source": {
+        "source": "github",
+        "repo": "bogdankharchenko/marketplace"
+      },
+      "version": "1.0.0"
+    }
+  ]
+}
