@@ -1,10 +1,8 @@
 {
   "name": "storyboard",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Generate consistent multi-scene storyboard images using Google Gemini",
   "author": {
     "name": "Bogdan"
-  },
-  "repository": "https://github.com/bogdankharchenko/marketplace",
-  "skills": "./.claude/skills/"
+  }
 }
