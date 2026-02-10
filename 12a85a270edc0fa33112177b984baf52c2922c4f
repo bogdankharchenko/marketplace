@@ -1,0 +1,25 @@
+.claude/skills/storyboard/SKILL.md
+  2476e32e9e5205b5 1-79
+.claude/settings.json
+  2476e32e9e5205b5 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.1",
+  "base_commit_sha": "12a85a270edc0fa33112177b984baf52c2922c4f",
+  "prompts": {
+    "2476e32e9e5205b5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "546f617e-f3ae-4dc5-a7ab-dff8d02ab5e8",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Bogdan Kharchenko <scriptor@gmail.com>",
+      "messages": [],
+      "total_additions": 80,
+      "total_deletions": 5,
+      "accepted_lines": 80,
+      "overriden_lines": 0
+    }
+  }
+}
