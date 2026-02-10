@@ -1,6 +1,6 @@
 ---
 name: storyboard
-description: Generate consistent multi-scene storyboard images using Gemini. Use when the user wants to create a storyboard, generate sequential scene images, or create consistent multi-panel illustrations.
+description: Generate consistent multi-scene storyboard images using Gemini. Use when the user wants to create a storyboard, generate sequential scene images, or create consistent multi-panel illustrations. Can be invoked as /storyboard with scene descriptions.
 argument-hint: "<scene descriptions, optionally with aspect ratio and resolution>"
 allowed-tools: Bash, Read
 ---
@@ -38,18 +38,18 @@ $ARGUMENTS
 
 2. **Determine a folder name** — analyze the scenes and pick a short, filesystem-safe name using lowercase letters and hyphens (e.g., `knight-journey`, `fox-in-snow`). Keep it under 30 characters.
 
-3. **Locate the script** — the storyboard.py script is bundled with this plugin. Find it relative to this skill file:
+3. **Locate the script** — the storyboard.py script is bundled at `scripts/storyboard.py` relative to this SKILL.md. Find it:
    ```bash
-   PLUGIN_DIR="$(dirname "$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")")"
+   SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
    ```
-   The script is at `$PLUGIN_DIR/storyboard.py`. If not found, check the current working directory.
+   The script is at `$SKILL_DIR/scripts/storyboard.py`.
 
 4. **Build the JSON scenes array** — each element is a scene description string. Escape any special characters for shell safety.
 
 5. **Run the script** using Bash:
    ```bash
-   PLUGIN_DIR="$(dirname "$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")")"
-   python3 "$PLUGIN_DIR/storyboard.py" \
+   SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
+   python3 "$SKILL_DIR/scripts/storyboard.py" \
      --scenes '<JSON array of scene strings>' \
      --aspect-ratio '<aspect_ratio>' \
      --output-dir './storyboard-output/<folder-name>' \
@@ -76,8 +76,8 @@ Aspect ratio: 16:9
 
 You would run:
 ```bash
-PLUGIN_DIR="$(dirname "$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")")"
-python3 "$PLUGIN_DIR/storyboard.py" \
+SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
+python3 "$SKILL_DIR/scripts/storyboard.py" \
   --scenes '["A knight standing at the gates of a dark castle", "The knight drawing a glowing sword inside the castle", "The knight battling a dragon in the throne room"]' \
   --aspect-ratio '16:9' \
   --output-dir './storyboard-output/knight-castle-battle' \
