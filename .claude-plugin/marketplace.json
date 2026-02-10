@@ -6,12 +6,8 @@
   "plugins": [
     {
       "name": "storyboard",
-      "description": "Generate consistent multi-scene storyboard images using Google Gemini",
-      "source": {
-        "source": "github",
-        "repo": "bogdankharchenko/marketplace"
-      },
-      "version": "1.2.0"
+      "source": "./storyboard",
+      "description": "Generate consistent multi-scene storyboard images using Google Gemini"
     }
   ]
 }
