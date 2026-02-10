@@ -38,18 +38,13 @@ $ARGUMENTS
 
 2. **Determine a folder name** — analyze the scenes and pick a short, filesystem-safe name using lowercase letters and hyphens (e.g., `knight-journey`, `fox-in-snow`). Keep it under 30 characters.
 
-3. **Locate the script** — the storyboard.py script is bundled at `scripts/storyboard.py` relative to this SKILL.md. Find it:
-   ```bash
-   SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
-   ```
-   The script is at `$SKILL_DIR/scripts/storyboard.py`.
+3. **Locate the script** — the storyboard.py script is at `.claude/skills/storyboard/scripts/storyboard.py` relative to the project root.
 
 4. **Build the JSON scenes array** — each element is a scene description string. Escape any special characters for shell safety.
 
 5. **Run the script** using Bash:
    ```bash
-   SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
-   python3 "$SKILL_DIR/scripts/storyboard.py" \
+   python3 .claude/skills/storyboard/scripts/storyboard.py \
      --scenes '<JSON array of scene strings>' \
      --aspect-ratio '<aspect_ratio>' \
      --output-dir './storyboard-output/<folder-name>' \
@@ -76,8 +71,7 @@ Aspect ratio: 16:9
 
 You would run:
 ```bash
-SKILL_DIR="$(dirname "$(find ~/.claude -path '*/skills/storyboard/SKILL.md' -print -quit 2>/dev/null)")"
-python3 "$SKILL_DIR/scripts/storyboard.py" \
+python3 .claude/skills/storyboard/scripts/storyboard.py \
   --scenes '["A knight standing at the gates of a dark castle", "The knight drawing a glowing sword inside the castle", "The knight battling a dragon in the throne room"]' \
   --aspect-ratio '16:9' \
   --output-dir './storyboard-output/knight-castle-battle' \
