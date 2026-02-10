@@ -1,0 +1,23 @@
+.claude-plugin/marketplace.json
+  7f51233a1d3461d5 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.1",
+  "base_commit_sha": "e1a85c1d2e444dd93a6bfda9f1e51b66efa9ad9f",
+  "prompts": {
+    "7f51233a1d3461d5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11784ac9-ca01-40cc-b87c-c213f81b4899",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Bogdan Kharchenko <scriptor@gmail.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
