@@ -1,0 +1,27 @@
+rubber-duck/skills/rubber-duck/SKILL.md
+  d0b7d93247bf63ff 1-72
+.claude-plugin/marketplace.json
+  d0b7d93247bf63ff 11-15
+rubber-duck/.claude-plugin/plugin.json
+  d0b7d93247bf63ff 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.2",
+  "base_commit_sha": "e7c6cfc3a015a97987bc79b205c7d7d39ba2f119",
+  "prompts": {
+    "d0b7d93247bf63ff": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6890558a-0a7c-416e-b3e2-e7552ff2c156",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Bogdan Kharchenko <scriptor@gmail.com>",
+      "messages": [],
+      "total_additions": 85,
+      "total_deletions": 0,
+      "accepted_lines": 85,
+      "overriden_lines": 0
+    }
+  }
+}
