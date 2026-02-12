@@ -1,0 +1,8 @@
+{
+  "name": "rubber-duck",
+  "version": "1.0.0",
+  "description": "A rubber duck debugging companion that helps you think through problems by asking the right questions",
+  "author": {
+    "name": "Bogdan"
+  }
+}

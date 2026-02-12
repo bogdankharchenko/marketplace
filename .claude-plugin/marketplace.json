@@ -8,6 +8,11 @@
       "name": "storyboard",
       "source": "./storyboard",
       "description": "Generate consistent multi-scene storyboard images using Google Gemini"
+    },
+    {
+      "name": "rubber-duck",
+      "source": "./rubber-duck",
+      "description": "A rubber duck debugging companion that helps you think through problems"
     }
   ]
 }
