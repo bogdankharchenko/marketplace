@@ -1,8 +1,8 @@
 # Storyboard Generator
 
-A Claude Code plugin that generates consistent multi-scene storyboard images using Google Gemini.
+A Claude Code plugin that generates consistent multi-scene storyboard images using Replicate's qwen-image model.
 
-Each scene maintains visual consistency — same characters, style, and color palette — by using the first scene as a reference for all subsequent images.
+Each scene maintains visual consistency — same characters, style, and color palette — by using the first scene as a reference for all subsequent images. You can also provide your own start image (e.g., a character design) to maintain consistency from the beginning.
 
 ## Install
 
@@ -28,13 +28,15 @@ claude plugin install storyboard@bogdankharchenko-marketplace
 python3 --version  # verify it's installed
 ```
 
-**Gemini API Key** — get one free at https://aistudio.google.com/apikeys, then:
+**Replicate API Token** — get one at https://replicate.com/account/api-tokens, then:
 
 ```bash
-export GEMINI_API_KEY="your-key-here"
+export REPLICATE_API_TOKEN="your-token-here"
 ```
 
 To persist it, add the export line to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.).
+
+The skill will also prompt you for the token on first use and save it to `.env` automatically.
 
 ## Usage
 
@@ -46,17 +48,20 @@ Once installed, use the `/storyboard` command in Claude Code:
 - The fox chasing a rabbit through the snow
 - The fox resting under a pine tree at sunset
 Aspect ratio: 16:9
-Resolution: 2K
 ```
 
 Images are saved to `./storyboard-output/<auto-named-folder>/` in your current directory.
+
+### Start image
+
+The skill will ask if you have a reference image for character or style consistency. This is useful when you want to maintain a specific character design or art style across all scenes. You can provide a local file path or URL.
 
 ### Options
 
 | Setting | Default | Values |
 |---------|---------|--------|
 | Aspect ratio | `16:9` | `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9` |
-| Resolution | `2K` | `1K`, `2K`, `4K` |
+| Strength | `0.65` | `0.0` to `1.0` — lower keeps scenes closer to reference, higher allows more deviation |
 
 Just include them in your message naturally:
 
@@ -65,7 +70,7 @@ Just include them in your message naturally:
 - Scene one description
 - Scene two description
 Aspect ratio: 9:16
-Resolution: 4K
+Strength: 0.5
 ```
 
 ### Standalone usage (without Claude Code)
@@ -76,13 +81,21 @@ You can also run the Python script directly:
 python3 storyboard.py \
   --scenes '["A fox in snow", "The fox chasing a rabbit"]' \
   --aspect-ratio '16:9' \
+  --output-dir './my-storyboard'
+
+# With a reference image:
+python3 storyboard.py \
+  --scenes '["A fox in snow", "The fox chasing a rabbit"]' \
+  --aspect-ratio '16:9' \
   --output-dir './my-storyboard' \
-  --resolution '2K'
+  --start-image './my-character.png' \
+  --strength '0.65'
 ```
 
 ## How it works
 
-1. Generates the first scene image from your description
-2. Uses that image as a visual reference for all subsequent scenes
-3. Each scene is generated sequentially via the Gemini API to maintain consistency
-4. All images are saved as PNGs in the output directory
+1. Asks if you have a reference/start image for consistency
+2. Generates the first scene image from your description (using the start image if provided)
+3. Uses that image as a visual reference for all subsequent scenes via img2img
+4. Each scene is generated sequentially via the Replicate API to maintain consistency
+5. All images are saved as PNGs in the output directory

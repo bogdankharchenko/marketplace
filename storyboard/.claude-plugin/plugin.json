@@ -1,7 +1,7 @@
 {
   "name": "storyboard",
-  "version": "1.2.0",
-  "description": "Generate consistent multi-scene storyboard images using Google Gemini",
+  "version": "2.0.0",
+  "description": "Generate consistent multi-scene storyboard images using Replicate",
   "author": {
     "name": "Bogdan"
   }
