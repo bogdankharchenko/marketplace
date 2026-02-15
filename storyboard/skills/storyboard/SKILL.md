@@ -1,7 +1,7 @@
 ---
 name: storyboard
-description: Generate consistent multi-scene storyboard images using Replicate. Use when the user wants to create a storyboard, generate sequential scene images, or create consistent multi-panel illustrations. Can be invoked as /storyboard with scene descriptions.
-argument-hint: "<scene descriptions, optionally with aspect ratio and strength>"
+description: Generate consistent multi-scene storyboard images using Replicate's SeedDream 4. Use when the user wants to create a storyboard, generate sequential scene images, or create consistent multi-panel illustrations. Can be invoked as /storyboard with scene descriptions.
+argument-hint: "<scene descriptions, optionally with aspect ratio and size>"
 allowed-tools: Bash, Read
 ---
 
@@ -49,9 +49,9 @@ $ARGUMENTS
 1. **Parse the input** to extract:
    - A list of scene descriptions (from markdown bullets `-` or numbered items `1.`)
    - An optional aspect ratio (look for "aspect ratio:" — default: `16:9`)
-     - Supported values: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9`
-   - An optional strength (look for "strength:" — default: `0.65`)
-     - Range: `0.0` to `1.0` — lower values keep scenes closer to the reference image, higher values allow more creative deviation
+     - Supported values: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `9:16`, `16:9`, `21:9`
+   - An optional size/resolution (look for "size:" or "resolution:" — default: `2K`)
+     - Supported values: `1K` (1024px), `2K` (2048px), `4K` (4096px)
 
 2. **Determine a folder name** — analyze the scenes and pick a short, filesystem-safe name using lowercase letters and hyphens (e.g., `knight-journey`, `fox-in-snow`). Keep it under 30 characters.
 
@@ -68,9 +68,9 @@ $ARGUMENTS
    python3 "$SCRIPT" \
      --scenes '<JSON array of scene strings>' \
      --aspect-ratio '<aspect_ratio>' \
+     --size '<size>' \
      --output-dir './storyboard-output/<folder-name>' \
-     [--start-image '<path-or-url>'] \
-     [--strength '<strength>']
+     [--start-image '<path-or-url>']
    ```
 
    Note: output goes to `./storyboard-output/<folder-name>` in the user's **current working directory**.
@@ -97,6 +97,7 @@ SCRIPT="$(find . ~/.claude "$HOME/Library/Application Support/Claude" -path '*/s
 python3 "$SCRIPT" \
   --scenes '["A knight standing at the gates of a dark castle", "The knight drawing a glowing sword inside the castle", "The knight battling a dragon in the throne room"]' \
   --aspect-ratio '16:9' \
+  --size '2K' \
   --output-dir './storyboard-output/knight-castle-battle'
 ```
 
@@ -105,7 +106,16 @@ With a start image:
 python3 "$SCRIPT" \
   --scenes '["The knight entering a dark forest", "The knight finding a hidden temple"]' \
   --aspect-ratio '16:9' \
+  --size '2K' \
   --output-dir './storyboard-output/knight-forest' \
-  --start-image './my-character.png' \
-  --strength '0.65'
+  --start-image './my-character.png'
+```
+
+With 4K resolution:
+```bash
+python3 "$SCRIPT" \
+  --scenes '["A sunset over the ocean", "A lighthouse in a storm"]' \
+  --aspect-ratio '21:9' \
+  --size '4K' \
+  --output-dir './storyboard-output/ocean-lighthouse'
 ```

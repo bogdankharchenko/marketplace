@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Storyboard generator using Replicate's qwen-image model.
+Storyboard generator using Replicate's SeedDream 4 model by ByteDance.
 
 Generates consistent multi-scene images by using scene 1's output
 (or a user-provided start image) as a reference for all subsequent scenes.
@@ -17,15 +17,29 @@ import urllib.request
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 API_BASE = "https://api.replicate.com/v1"
-MODEL = "qwen/qwen-image"
+MODEL = "bytedance/seedream-4"
 
 VALID_ASPECT_RATIOS = [
     "1:1", "2:3", "3:2", "3:4", "4:3",
-    "4:5", "5:4", "9:16", "16:9", "21:9",
+    "9:16", "16:9", "21:9",
 ]
+
+VALID_SIZES = ["1K", "2K", "4K"]
 
 REQUEST_TIMEOUT = 300
 POLL_INTERVAL = 3
+MIN_REQUEST_INTERVAL = 1.0  # minimum seconds between API calls
+
+_last_request_time = 0.0
+
+
+def _rate_limit():
+    """Ensure at least MIN_REQUEST_INTERVAL seconds between API calls."""
+    global _last_request_time
+    elapsed = time.monotonic() - _last_request_time
+    if elapsed < MIN_REQUEST_INTERVAL:
+        time.sleep(MIN_REQUEST_INTERVAL - elapsed)
+    _last_request_time = time.monotonic()
 
 
 def load_api_token():
@@ -64,6 +78,7 @@ def api_request(url, token, payload=None, method="POST"):
         headers["Prefer"] = "wait"
         data = json.dumps(payload).encode("utf-8")
 
+    _rate_limit()
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
@@ -94,22 +109,19 @@ def poll_prediction(token, prediction):
         # starting / processing — keep polling
 
 
-def generate_scene(token, prompt, aspect_ratio, reference_image=None, strength=0.65):
-    """Generate a single scene image via Replicate."""
+def generate_scene(token, prompt, aspect_ratio, size, reference_images=None):
+    """Generate a single scene image via Replicate's SeedDream 4."""
     url = f"{API_BASE}/models/{MODEL}/predictions"
 
     input_data = {
         "prompt": prompt,
         "aspect_ratio": aspect_ratio,
-        "num_inference_steps": 35,
-        "guidance": 3.0,
-        "output_format": "png",
-        "go_fast": True,
+        "size": size,
+        "enhance_prompt": True,
     }
 
-    if reference_image:
-        input_data["image"] = reference_image
-        input_data["strength"] = strength
+    if reference_images:
+        input_data["image_input"] = reference_images
 
     result = api_request(url, token, {"input": input_data})
 
@@ -152,14 +164,13 @@ def image_to_data_uri(filepath):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate storyboard images with Replicate")
+    parser = argparse.ArgumentParser(description="Generate storyboard images with SeedDream 4")
     parser.add_argument("--scenes", required=True, help="JSON array of scene descriptions")
     parser.add_argument("--aspect-ratio", default="16:9", help="Aspect ratio (default: 16:9)")
+    parser.add_argument("--size", default="2K", help="Resolution: 1K, 2K, or 4K (default: 2K)")
     parser.add_argument("--output-dir", required=True, help="Output directory for images")
     parser.add_argument("--start-image", default=None,
                         help="Path or URL to a reference image for character/style consistency")
-    parser.add_argument("--strength", type=float, default=0.65,
-                        help="How much to deviate from reference (0-1, default: 0.65)")
     args = parser.parse_args()
 
     if args.aspect_ratio not in VALID_ASPECT_RATIOS:
@@ -167,8 +178,9 @@ def main():
               f"Must be one of: {', '.join(VALID_ASPECT_RATIOS)}", file=sys.stderr)
         sys.exit(1)
 
-    if not 0 <= args.strength <= 1:
-        print(f"Error: Strength must be between 0 and 1, got {args.strength}", file=sys.stderr)
+    if args.size not in VALID_SIZES:
+        print(f"Error: Invalid size '{args.size}'. "
+              f"Must be one of: {', '.join(VALID_SIZES)}", file=sys.stderr)
         sys.exit(1)
 
     try:
@@ -181,7 +193,7 @@ def main():
         print("Error: --scenes must be a non-empty JSON array of strings", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Storyboard: {len(scenes)} scene(s), {args.aspect_ratio}")
+    print(f"Storyboard: {len(scenes)} scene(s), {args.aspect_ratio}, {args.size}")
     print(f"Output: {args.output_dir}")
     if args.start_image:
         print(f"Start image: {args.start_image}")
@@ -191,15 +203,15 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Prepare start image reference if provided
-    reference_input = None
+    reference_uri = None
     if args.start_image:
         if args.start_image.startswith(("http://", "https://", "data:")):
-            reference_input = args.start_image
+            reference_uri = args.start_image
         else:
             if not os.path.exists(args.start_image):
                 print(f"Error: Start image not found: {args.start_image}", file=sys.stderr)
                 sys.exit(1)
-            reference_input = image_to_data_uri(args.start_image)
+            reference_uri = image_to_data_uri(args.start_image)
 
     scene1_output_url = None
     saved_count = 0
@@ -207,16 +219,16 @@ def main():
     for i, description in enumerate(scenes, start=1):
         print(f"[{i}/{len(scenes)}] Generating: {description[:80]}...")
 
-        # Determine reference image and prompt for this scene
-        ref = None
-        if i == 1 and reference_input:
-            ref = reference_input
+        # Determine reference images and prompt for this scene
+        ref_images = None
+        if i == 1 and reference_uri:
+            ref_images = [reference_uri]
             prompt = (
                 "Using the same characters, art style, and color palette "
                 "from the reference image. Generate: " + description
             )
         elif i > 1 and scene1_output_url:
-            ref = scene1_output_url
+            ref_images = [scene1_output_url]
             prompt = (
                 "Maintain the same characters, art style, and color palette. "
                 "Generate a new scene: " + description
@@ -225,7 +237,7 @@ def main():
             prompt = description
 
         try:
-            result = generate_scene(token, prompt, args.aspect_ratio, ref, args.strength)
+            result = generate_scene(token, prompt, args.aspect_ratio, args.size, ref_images)
             output = result.get("output")
 
             if not output:

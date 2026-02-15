@@ -1,6 +1,6 @@
 # Storyboard Generator
 
-A Claude Code plugin that generates consistent multi-scene storyboard images using Replicate's qwen-image model.
+A Claude Code plugin that generates consistent multi-scene storyboard images using Replicate's SeedDream 4 model by ByteDance.
 
 Each scene maintains visual consistency — same characters, style, and color palette — by using the first scene as a reference for all subsequent images. You can also provide your own start image (e.g., a character design) to maintain consistency from the beginning.
 
@@ -60,8 +60,8 @@ The skill will ask if you have a reference image for character or style consiste
 
 | Setting | Default | Values |
 |---------|---------|--------|
-| Aspect ratio | `16:9` | `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9` |
-| Strength | `0.65` | `0.0` to `1.0` — lower keeps scenes closer to reference, higher allows more deviation |
+| Aspect ratio | `16:9` | `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `9:16`, `16:9`, `21:9` |
+| Size | `2K` | `1K` (1024px), `2K` (2048px), `4K` (4096px) |
 
 Just include them in your message naturally:
 
@@ -70,7 +70,7 @@ Just include them in your message naturally:
 - Scene one description
 - Scene two description
 Aspect ratio: 9:16
-Strength: 0.5
+Size: 4K
 ```
 
 ### Standalone usage (without Claude Code)
@@ -81,21 +81,22 @@ You can also run the Python script directly:
 python3 storyboard.py \
   --scenes '["A fox in snow", "The fox chasing a rabbit"]' \
   --aspect-ratio '16:9' \
+  --size '2K' \
   --output-dir './my-storyboard'
 
 # With a reference image:
 python3 storyboard.py \
   --scenes '["A fox in snow", "The fox chasing a rabbit"]' \
   --aspect-ratio '16:9' \
+  --size '2K' \
   --output-dir './my-storyboard' \
-  --start-image './my-character.png' \
-  --strength '0.65'
+  --start-image './my-character.png'
 ```
 
 ## How it works
 
 1. Asks if you have a reference/start image for consistency
 2. Generates the first scene image from your description (using the start image if provided)
-3. Uses that image as a visual reference for all subsequent scenes via img2img
+3. Uses that image as a visual reference for all subsequent scenes via the `image_input` parameter
 4. Each scene is generated sequentially via the Replicate API to maintain consistency
 5. All images are saved as PNGs in the output directory

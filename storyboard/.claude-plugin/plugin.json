@@ -1,7 +1,7 @@
 {
   "name": "storyboard",
   "version": "2.0.0",
-  "description": "Generate consistent multi-scene storyboard images using Replicate",
+  "description": "Generate consistent multi-scene storyboard images using Replicate's SeedDream 4",
   "author": {
     "name": "Bogdan"
   }
