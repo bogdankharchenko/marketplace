@@ -7,7 +7,7 @@
     {
       "name": "storyboard",
       "source": "./storyboard",
-      "description": "Generate consistent multi-scene storyboard images using Google Gemini"
+      "description": "Generate consistent multi-scene storyboard images using Replicate"
     },
     {
       "name": "rubber-duck",
